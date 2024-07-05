@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 @Getter
 @Setter
 @Entity
@@ -19,9 +23,11 @@ public class Role {
     @JoinColumn(name = "user_id")
     private Utente utente;
 
+    public Role() {
+    }
 
-    public Role(String name, Utente user) {
+    public Role(String name, Utente utente) {
         this.name = name;
-        this.utente = user;
+        this.utente = utente;
     }
 }

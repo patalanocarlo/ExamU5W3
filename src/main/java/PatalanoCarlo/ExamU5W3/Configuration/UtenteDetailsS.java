@@ -16,13 +16,14 @@ import java.util.Set;
 
 @Service
 public class UtenteDetailsS implements UserDetailsService {
+
     @Autowired
     private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-       Utente user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato con lo userName: " + username));
+        Utente user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato con lo username: " + username));
 
         Set<GrantedAuthority> authorities = new HashSet<>();
         for (Role role : user.getRoles()) {

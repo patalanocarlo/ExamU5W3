@@ -19,24 +19,30 @@ public class EventService {
     @Autowired
     private UserRepository userRepository;
 
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
+    }
 
     public List<Event> getEventsByOrganizerId(Long organizerId) {
         return eventRepository.findByOrganizerId(organizerId);
     }
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll();
-    }
+
     public Event createEvent(EventDTO eventDTO) {
+        Utente organizer = userRepository.findById(eventDTO.getOrganizerId())
+                .orElseThrow(() -> new RuntimeException("Nessun organizzatore trovato con id: " + eventDTO.getOrganizerId()));
+
         Event event = new Event();
         event.setTitle(eventDTO.getTitle());
         event.setDescription(eventDTO.getDescription());
         event.setDate(eventDTO.getDate());
         event.setLocation(eventDTO.getLocation());
         event.setAvailableSeats(eventDTO.getAvailableSeats());
-
-        Utente organizer = userRepository.findById(eventDTO.getOrganizerId())
-                .orElseThrow(() -> new RuntimeException("Nessun organizzatore trovato con id: " + eventDTO.getOrganizerId()));
         event.setOrganizer(organizer);
+
         return eventRepository.save(event);
+    }
+
+    public void deleteEvent(Long eventId) {
+        eventRepository.deleteById(eventId);
     }
 }

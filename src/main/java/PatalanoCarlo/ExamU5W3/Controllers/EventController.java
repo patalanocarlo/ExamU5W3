@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/event")
 public class EventController {
@@ -17,7 +16,7 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<Event>> getAllEvents() {
         List<Event> events = eventService.getAllEvents();
         return new ResponseEntity<>(events, HttpStatus.OK);
@@ -25,7 +24,17 @@ public class EventController {
 
     @PostMapping("/create")
     public ResponseEntity<Event> createEvent(@RequestBody EventDTO eventDTO) {
-        Event event = eventService.createEvent(eventDTO);
-        return new ResponseEntity<>(event, HttpStatus.CREATED);
+        try {
+            Event event = eventService.createEvent(eventDTO);
+            return new ResponseEntity<>(event, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/{organizerId}/events")
+    public ResponseEntity<List<Event>> getEventsByOrganizer(@PathVariable Long organizerId) {
+        List<Event> events = eventService.getEventsByOrganizerId(organizerId);
+        return new ResponseEntity<>(events, HttpStatus.OK);
     }
 }

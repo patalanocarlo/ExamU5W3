@@ -6,6 +6,7 @@ import PatalanoCarlo.ExamU5W3.Entites.Role;
 import PatalanoCarlo.ExamU5W3.Entites.Utente;
 import PatalanoCarlo.ExamU5W3.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.Set;
 
 @Service
 public class UtenteService {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -24,55 +26,32 @@ public class UtenteService {
     @Autowired
     private JWTTools jwtTools;
 
-    public List<Utente> getAllUsers() {
-        return userRepository.findAll();
-    }
     public void registerUser(UserDTO userDTO) {
         Utente user = new Utente();
         user.setUsername(userDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
-
         Set<Role> roles = new HashSet<>();
-        if (userDTO.isOrganizer()) {
-            roles.add(new Role("ROLE_ORGANIZER", user));
-        } else {
-            roles.add(new Role("ROLE_USER", user));
-        }
+        roles.add(new Role("ROLE_USER", user));
         user.setRoles(roles);
 
         userRepository.save(user);
     }
 
-
-
     public boolean authenticate(String username, String password) {
         Utente user = userRepository.findByUsername(username)
-                .orElse(null);
+                .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato con username: " + username));
 
-        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-            return true;
-        } else {
-            return false;
-        }
+        return passwordEncoder.matches(password, user.getPassword());
     }
 
-
-    public boolean isUserOrganizer(String username) {
+    public Long getUserIdByUsername(String username) {
         Utente user = userRepository.findByUsername(username)
-                .orElse(null);
-
-        if (user != null && user.getRoles() != null) {
-            for (Role role : user.getRoles()) {
-                if ("ROLE_ORGANIZER".equals(role.getName())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+                .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato con username: " + username));
+        return user.getId();
     }
 
-    public String generateOrganizerToken(Long userId) {
+    public String generateToken(Long userId) {
         return jwtTools.createToken(userId);
     }
 }
