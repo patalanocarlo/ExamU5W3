@@ -18,15 +18,16 @@ public class Utente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userName;
+    private String username;
 
     private String password;
     @OneToMany(mappedBy = "utente")
     private Set<Role> roles;
-
-    public Utente(Set<Role> roles, String password, String userName) {
+    @Column
+    private String organizerToken;
+    public Utente(Set<Role> roles, String password, String username) {
         this.roles = roles;
         this.password = password;
-        this.userName = userName;
+        this.username = username;
     }
 }
