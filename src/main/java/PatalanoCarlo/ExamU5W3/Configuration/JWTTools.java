@@ -18,11 +18,13 @@ public class JWTTools {
     public String createToken(Long userId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + 1000 * 60 * 60 * 24 * 7);
+
         return Jwts.builder()
-                .setSubject(Long.toString(userId))
+                .setSubject(String.valueOf(userId))
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .claim("role", "ORGANIZER")
+                .signWith(SignatureAlgorithm.HS256, secret.getBytes())
                 .compact();
     }
 }

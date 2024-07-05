@@ -27,26 +27,24 @@ public class UtenteService {
     @Autowired
     private JWTTools jwtTools;
 
-    public void registerUser(UserDTO userDTO) {
+    public Long registerUser(UserDTO userDTO) {
         Utente user = new Utente();
         user.setUsername(userDTO.getUsername());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         Set<Role> roles = new HashSet<>();
-        Role role;
         if ("organizer".equalsIgnoreCase(userDTO.getRole())) {
-            role = new Role("ROLE_ORGANIZER", user);
-            user.setOrganizerToken(UUID.randomUUID().toString());
+            roles.add(new Role("ORGANIZER", user));
+
+            user.setOrganizerToken(jwtTools.createToken(user.getId()));
         } else {
-            role = new Role("ROLE_USER", user);
-            user.setOrganizerToken(null);
+            roles.add(new Role("ROLE_USER", user));
         }
-        roles.add(role);
         user.setRoles(roles);
 
-        userRepository.save(user);
+        Utente savedUser = userRepository.save(user);
+        return savedUser.getId();
     }
-
     public boolean authenticate(String username, String password) {
         Utente user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Utente non trovato con username: " + username));

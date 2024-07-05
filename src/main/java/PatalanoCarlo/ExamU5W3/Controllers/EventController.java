@@ -42,10 +42,4 @@ public class EventController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
-    @GetMapping("/{organizerId}/events")
-    public ResponseEntity<List<Event>> getEventsByOrganizer(@PathVariable Long organizerId) {
-        List<Event> events = eventService.getEventsByOrganizerId(organizerId);
-        return new ResponseEntity<>(events, HttpStatus.OK);
-    }
 }
