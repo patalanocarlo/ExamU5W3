@@ -34,7 +34,10 @@ public class SecurityConfig {
         httpSecurity.formLogin(http -> http.disable());
         httpSecurity.csrf(http -> http.disable());
         httpSecurity.sessionManagement(http -> http.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        httpSecurity.authorizeHttpRequests(http -> http.requestMatchers("/**").permitAll());
+        httpSecurity.authorizeHttpRequests(http -> {
+            http.requestMatchers("/event/create", "/event/delete/**").hasRole("ORGANIZER");
+            http.requestMatchers("/**").permitAll();
+        });
 
         return httpSecurity.build();
     }

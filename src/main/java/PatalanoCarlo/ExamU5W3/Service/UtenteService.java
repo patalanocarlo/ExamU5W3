@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class UtenteService {
@@ -32,7 +33,15 @@ public class UtenteService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         Set<Role> roles = new HashSet<>();
-        roles.add(new Role("ROLE_USER", user));
+        Role role;
+        if ("organizer".equalsIgnoreCase(userDTO.getRole())) {
+            role = new Role("ROLE_ORGANIZER", user);
+            user.setOrganizerToken(UUID.randomUUID().toString());
+        } else {
+            role = new Role("ROLE_USER", user);
+            user.setOrganizerToken(null);
+        }
+        roles.add(role);
         user.setRoles(roles);
 
         userRepository.save(user);

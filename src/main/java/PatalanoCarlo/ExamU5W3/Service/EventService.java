@@ -42,7 +42,14 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public void deleteEvent(Long eventId) {
+    public void deleteEvent(Long eventId, Long organizerId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Evento non trovato con id: " + eventId));
+
+        if (!event.getOrganizer().getId().equals(organizerId)) {
+            throw new RuntimeException("Non sei autorizzato a cancellare questo evento");
+        }
+
         eventRepository.deleteById(eventId);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("/event")
 public class EventController {
@@ -27,6 +28,16 @@ public class EventController {
         try {
             Event event = eventService.createEvent(eventDTO);
             return new ResponseEntity<>(event, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/delete/{eventId}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long eventId, @RequestParam Long organizerId) {
+        try {
+            eventService.deleteEvent(eventId, organizerId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
