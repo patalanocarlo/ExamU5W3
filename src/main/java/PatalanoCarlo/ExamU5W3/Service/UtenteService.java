@@ -54,4 +54,8 @@ public class UtenteService {
     public String generateToken(Long userId) {
         return jwtTools.createToken(userId);
     }
+
+    public List<Utente> getAllUsers() {
+        return userRepository.findAll();
+    }
 }
